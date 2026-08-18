@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/Reveal";
-import { ProcessFilm } from "@/components/ProcessFilm";
 
 export const metadata: Metadata = {
   title: "Our story",
@@ -196,9 +195,6 @@ export default function AboutPage() {
           </dl>
         </Reveal>
       </Chapter>
-
-      {/* ---- 05: the film says this better than a paragraph can ------- */}
-      <ProcessFilm />
 
       {/* ---- 06 ------------------------------------------------------- */}
       <Chapter n="05" label="Who it is for">
