@@ -109,7 +109,6 @@ export const PRODUCTS: Product[] = [
     shelfLifeDays: 180,
     noAddedSugar: false,
     bestseller: true,
-    photoPending: true,
   },
   {
     slug: "allam-ginger-pickle",
@@ -146,7 +145,6 @@ export const PRODUCTS: Product[] = [
     shelfLifeDays: 180,
     noAddedSugar: false,
     bestseller: true,
-    photoPending: true,
   },
   {
     slug: "jeedipappu-kothimeera-pickle",
