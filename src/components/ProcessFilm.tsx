@@ -88,6 +88,31 @@ export function ProcessFilm() {
     video.addEventListener("loadedmetadata", readDuration);
     measure();
 
+    // The file is 1.8MB and sits several screens down. Attaching the source
+    // only once it is within a screen of the viewport keeps it out of the
+    // initial page load, where it was most of the weight.
+    const attach = () => {
+      if (video.getAttribute("src")) return;
+      video.setAttribute("src", "/video/pickle-process.mp4");
+      video.load();
+    };
+
+    const loader = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        attach();
+        loader.disconnect();
+      },
+      { rootMargin: "100% 0px" },
+    );
+    loader.observe(wrap);
+
+    // Last resort. If the observer never fires, the film still arrives for
+    // anyone who has scrolled anywhere near it rather than staying a poster.
+    const failsafe = window.setTimeout(() => {
+      if (wrap.getBoundingClientRect().top < window.innerHeight * 2) attach();
+    }, 4000);
+
     // The loop only runs while the film is on screen. Off screen there is
     // nothing to seek, and a rAF running the length of the page is rent paid
     // for nothing.
@@ -102,6 +127,8 @@ export function ProcessFilm() {
     io.observe(wrap);
 
     return () => {
+      window.clearTimeout(failsafe);
+      loader.disconnect();
       io.disconnect();
       window.cancelAnimationFrame(raf);
       video.removeEventListener("loadedmetadata", readDuration);
@@ -115,11 +142,10 @@ export function ProcessFilm() {
           <video
             ref={videoRef}
             className="absolute inset-0 h-full w-full object-cover"
-            src="/video/pickle-process.mp4"
             poster="/video/pickle-process-poster.jpg"
             muted
             playsInline
-            preload="auto"
+            preload="none"
             aria-hidden="true"
             tabIndex={-1}
           />
