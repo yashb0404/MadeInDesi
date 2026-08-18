@@ -8,6 +8,7 @@ import { cx } from "@/lib/format";
 
 const LINKS = [
   { href: "/shop", label: "Shop" },
+  { href: "/about", label: "Our story" },
   { href: "/#kitchen", label: "The kitchen" },
   { href: "/#who", label: "Who it's for" },
 ];
