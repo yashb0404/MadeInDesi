@@ -21,7 +21,11 @@ export const metadata: Metadata = {
  * take only the large type and still leave with the whole story.
  */
 
-/** A chapter: numbered in the margin, so the reader always knows where they are. */
+/**
+ * A chapter. The marker sits above the prose on the same left edge rather than
+ * out in the margin: a story is read top to bottom, and a number off to one
+ * side makes the eye travel sideways at every section start for no gain.
+ */
 function Chapter({
   n,
   label,
@@ -32,17 +36,16 @@ function Chapter({
   children: ReactNode;
 }) {
   return (
-    <section className="u-shell py-16 md:py-24">
-      <div className="grid gap-8 md:grid-cols-[7rem_1fr] md:gap-12">
+    <section className="u-shell py-10 md:py-14">
+      <div className="max-w-[48ch]">
         <Reveal>
-          <div className="flex items-baseline gap-3 md:block">
-            <p className="u-display text-[2.5rem] leading-none text-[var(--hairline)] md:text-[3.5rem]">
-              {n}
-            </p>
-            <p className="u-eyebrow md:mt-3">{label}</p>
-          </div>
+          <p className="u-eyebrow flex items-baseline gap-2.5">
+            <span className="text-[var(--ink-faint)]">{n}</span>
+            <span aria-hidden="true" className="h-px w-6 bg-[var(--hairline)]" />
+            <span>{label}</span>
+          </p>
         </Reveal>
-        <div className="max-w-[46ch]">{children}</div>
+        <div className="mt-5">{children}</div>
       </div>
     </section>
   );
@@ -51,13 +54,13 @@ function Chapter({
 /** A line the story turns on. Given a band and a screen of its own. */
 function Turn({ children, note }: { children: ReactNode; note?: string }) {
   return (
-    <section className="u-band py-20 md:py-28">
+    <section className="u-band py-14 md:py-20">
       <div className="u-shell">
         <Reveal>
           <p className="u-display max-w-[20ch] text-[clamp(1.9rem,4.6vw,3.5rem)] leading-[1.08] text-leaf-deep">
             {children}
           </p>
-          {note ? <p className="u-data text-[var(--ink-faint)] mt-6">{note}</p> : null}
+          {note ? <p className="u-data text-[var(--ink-faint)] mt-5">{note}</p> : null}
         </Reveal>
       </div>
     </section>
@@ -72,7 +75,7 @@ function Say({ children, lead = false }: { children: ReactNode; lead?: boolean }
         className={
           lead
             ? "text-[1.2rem] leading-[1.75] text-[var(--color-ink)] md:text-[1.35rem]"
-            : "mt-6 text-[1.05rem] leading-[1.85] text-[var(--ink-dim)]"
+            : "mt-4 text-[1.05rem] leading-[1.75] text-[var(--ink-dim)]"
         }
       >
         {children}
@@ -97,15 +100,15 @@ const SERVES = [
 
 export default function AboutPage() {
   return (
-    <div className="pb-24">
+    <div className="pb-20">
       {/* ---- the opening ---------------------------------------------- */}
-      <section className="u-shell pt-28 pb-8 md:pt-36 md:pb-12">
+      <section className="u-shell pt-28 pb-6 md:pt-32 md:pb-8">
         <Reveal>
           <p className="u-eyebrow">Our story</p>
-          <h1 className="u-display mt-6 max-w-[14ch] text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98]">
+          <h1 className="u-display mt-5 max-w-[14ch] text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98]">
             It began on a hospital bed.
           </h1>
-          <p className="u-data text-[var(--ink-faint)] mt-8">
+          <p className="u-data text-[var(--ink-faint)] mt-6">
             Made In Desi &middot; founded by Maaya &middot; Hyderabad
           </p>
         </Reveal>
@@ -179,11 +182,11 @@ export default function AboutPage() {
           ours, in four parts.
         </Say>
         <Reveal>
-          <dl className="mt-10 grid">
+          <dl className="mt-7 grid">
             {PROMISES.map(([term, detail], i) => (
               <div
                 key={term}
-                className="py-6"
+                className="py-5"
                 style={i > 0 ? { borderTop: "1px solid var(--hairline)" } : undefined}
               >
                 <dt className="u-display text-[1.35rem] text-leaf-deep">{term}</dt>
@@ -203,7 +206,7 @@ export default function AboutPage() {
           Anyone who would rather know what they are eating.
         </Say>
         <Reveal>
-          <ul className="mt-8 grid gap-px overflow-hidden">
+          <ul className="mt-6 grid">
             {SERVES.map((who, i) => (
               <li
                 key={who}
@@ -218,12 +221,12 @@ export default function AboutPage() {
       </Chapter>
 
       {/* ---- the close ------------------------------------------------ */}
-      <section className="u-shell pt-8 pb-4 md:pt-12">
+      <section className="u-shell pt-10 pb-4 md:pt-14">
         <Reveal>
           <p className="u-display max-w-[16ch] text-[clamp(2rem,5vw,3.5rem)] leading-[1.05]">
             We bring you health, not just food.
           </p>
-          <div className="mt-10 flex flex-wrap items-center gap-4">
+          <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link href="/shop" className="u-btn">
               See the shelf
             </Link>
