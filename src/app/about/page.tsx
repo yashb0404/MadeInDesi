@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/Reveal";
 import { ScrollSwap } from "@/components/ScrollSwap";
@@ -127,15 +128,32 @@ export default function AboutPage() {
     <div className="pb-16">
       {/* ---- the opening ---------------------------------------------- */}
       <section className="u-shell pt-24 pb-4 md:pt-28 md:pb-6">
-        <Reveal>
-          <p className="u-eyebrow">Our story</p>
-          <h1 className="u-display mt-5 max-w-[14ch] text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98]">
-            It began on a hospital bed.
-          </h1>
-          <p className="u-data text-[var(--ink-faint)] mt-6">
-            Made In Desi &middot; founded by Maaya &middot; Hyderabad
-          </p>
-        </Reveal>
+        <div className="grid items-end gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+          <Reveal>
+            <p className="u-eyebrow">Our story</p>
+            <h1 className="u-display mt-5 max-w-[14ch] text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98]">
+              It began on a hospital bed.
+            </h1>
+            <p className="u-data text-[var(--ink-faint)] mt-6">
+              Made In Desi &middot; founded by Maaya &middot; Hyderabad
+            </p>
+          </Reveal>
+
+          <Reveal delay={160}>
+            {/* An arch rather than a rectangle, echoing the shape the homepage
+                already uses for its shots. */}
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-t-[999px] bg-surface-2">
+              <Image
+                src="/products/amla-pickle.jpg"
+                alt="A jar of amla pickle, whole gooseberries in spiced oil"
+                fill
+                sizes="(min-width: 1024px) 38vw, 100vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+          </Reveal>
+        </div>
       </section>
 
       {/* ---- 01: the chapter becomes the line it produced -------------- */}
@@ -199,6 +217,28 @@ export default function AboutPage() {
         <Say>
           Nothing here is invented. It is remembered.
         </Say>
+
+        <Reveal>
+          <div className="mt-8 grid grid-cols-2 gap-3">
+            {[
+              ["/products/cashew-gongura-pickle.jpg", "Cashew gongura pickle in a glass jar"],
+              ["/products/nutrition-balls.jpg", "Hand-rolled nutrition balls"],
+            ].map(([src, alt]) => (
+              <div
+                key={src}
+                className="relative aspect-square overflow-hidden rounded-[0.75rem] bg-surface-2"
+              >
+                <Image
+                  src={src}
+                  alt={alt}
+                  fill
+                  sizes="(min-width: 768px) 24vw, 45vw"
+                  className="object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        </Reveal>
       </Chapter>
 
       <Turn note="What each product is actually carrying">
