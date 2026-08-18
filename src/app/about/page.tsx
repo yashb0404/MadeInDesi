@@ -36,7 +36,7 @@ function Chapter({
   children: ReactNode;
 }) {
   return (
-    <section className="u-shell py-10 md:py-14">
+    <section className="u-shell py-6 md:py-9">
       <div className="max-w-[48ch]">
         <Reveal>
           <p className="u-eyebrow flex items-baseline gap-2.5">
@@ -66,7 +66,7 @@ function TurnLine({ children, note }: { children: ReactNode; note?: string }) {
 /** A line the story turns on. Given a band and a screen of its own. */
 function Turn({ children, note }: { children: ReactNode; note?: string }) {
   return (
-    <section className="u-band py-14 md:py-20">
+    <section className="u-band py-10 md:py-14">
       <div className="u-shell">
         <Reveal>
           <p className="u-display max-w-[20ch] text-[clamp(1.9rem,4.6vw,3.5rem)] leading-[1.08] text-leaf-deep">
@@ -112,9 +112,9 @@ const SERVES = [
 
 export default function AboutPage() {
   return (
-    <div className="pb-20">
+    <div className="pb-16">
       {/* ---- the opening ---------------------------------------------- */}
-      <section className="u-shell pt-28 pb-6 md:pt-32 md:pb-8">
+      <section className="u-shell pt-24 pb-4 md:pt-28 md:pb-6">
         <Reveal>
           <p className="u-eyebrow">Our story</p>
           <h1 className="u-display mt-5 max-w-[14ch] text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98]">
@@ -235,7 +235,7 @@ export default function AboutPage() {
       </Chapter>
 
       {/* ---- the close ------------------------------------------------ */}
-      <section className="u-shell pt-10 pb-4 md:pt-14">
+      <section className="u-shell pt-6 pb-4 md:pt-8">
         <Reveal>
           <p className="u-display max-w-[16ch] text-[clamp(2rem,5vw,3.5rem)] leading-[1.05]">
             We bring you health, not just food.
