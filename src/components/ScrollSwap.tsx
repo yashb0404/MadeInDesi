@@ -76,8 +76,8 @@ export function ScrollSwap({ first, second }: { first: ReactNode; second: ReactN
   }, []);
 
   return (
-    <div ref={wrapRef} className="relative h-[135vh]">
-      <div className="sticky top-0 flex min-h-screen items-center overflow-hidden">
+    <div ref={wrapRef} className="relative h-[115vh]">
+      <div className="sticky top-0 flex min-h-[72vh] items-center overflow-hidden py-10">
         <div className="relative w-full">
           <div ref={firstRef} className="will-change-[opacity,transform]">
             {first}
