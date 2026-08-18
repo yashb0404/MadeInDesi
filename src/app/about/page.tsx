@@ -63,7 +63,14 @@ function TurnLine({ steps, note }: { steps: string[]; note?: string }) {
           </span>
         ))}
       </p>
-      {note ? <p className="u-data text-[var(--ink-faint)] mt-5">{note}</p> : null}
+      {note ? (
+        <p
+          data-step={steps.length}
+          className="u-data text-[var(--ink-faint)] mt-5 opacity-0 will-change-[opacity,transform]"
+        >
+          {note}
+        </p>
+      ) : null}
     </div>
   );
 }
