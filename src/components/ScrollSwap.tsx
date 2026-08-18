@@ -48,7 +48,7 @@ export function ScrollSwap({ first, second }: { first: ReactNode; second: ReactN
       // reads as two slides; overlapping them reads as one thought becoming
       // another.
       const out = clamp(p / 0.5);
-      const inn = clamp((p - 0.28) / 0.42);
+      const inn = clamp((p - 0.28) / 0.4);
 
       a.style.opacity = String(1 - out);
       a.style.transform = `translate3d(0, ${-out * 24}px, 0)`;
@@ -76,7 +76,7 @@ export function ScrollSwap({ first, second }: { first: ReactNode; second: ReactN
   }, []);
 
   return (
-    <div ref={wrapRef} className="relative h-[190vh]">
+    <div ref={wrapRef} className="relative h-[135vh]">
       <div className="sticky top-0 flex min-h-screen items-center overflow-hidden">
         <div className="relative w-full">
           <div ref={firstRef} className="will-change-[opacity,transform]">
