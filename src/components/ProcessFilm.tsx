@@ -85,16 +85,14 @@ export function ProcessFilm() {
       />
 
       <div className="u-shell">
-        <ol className="mt-8 grid gap-3 sm:grid-cols-2 md:mt-10 md:grid-cols-4">
+        <ol className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2 md:mt-10 md:grid-cols-4">
           {STAGES.map(({ punch, note }, i) => (
-            <li key={punch} className="flex items-baseline gap-3">
+            <li key={punch} className="pt-4" style={{ borderTop: "1px solid var(--hairline)" }}>
               <span className="u-data text-[var(--ink-faint)]">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <span>
-                <span className="u-display text-[1.15rem]">{punch}</span>
-                <span className="u-data text-[var(--ink-faint)] ml-2">{note}</span>
-              </span>
+              <p className="u-display mt-2 text-[1.15rem] leading-tight">{punch}</p>
+              <p className="u-data text-[var(--ink-faint)] mt-1.5 leading-snug">{note}</p>
             </li>
           ))}
         </ol>
