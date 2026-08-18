@@ -30,10 +30,18 @@ export function ScrollSwap({ first, second }: { first: ReactNode; second: ReactN
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       a.style.opacity = "1";
       b.style.opacity = "1";
+      b.querySelectorAll<HTMLElement>("[data-step]").forEach((step) => {
+        step.style.opacity = "1";
+        step.style.transform = "none";
+      });
       b.style.position = "relative";
       b.style.transform = "none";
       return;
     }
+
+    // Any part of the second half marked as a step arrives on its own beat,
+    // so a line can assemble itself instead of appearing whole.
+    const steps = [...b.querySelectorAll<HTMLElement>("[data-step]")];
 
     let raf = 0;
 
@@ -52,8 +60,19 @@ export function ScrollSwap({ first, second }: { first: ReactNode; second: ReactN
 
       a.style.opacity = String(1 - out);
       a.style.transform = `translate3d(0, ${-out * 24}px, 0)`;
-      b.style.opacity = String(inn);
-      b.style.transform = `translate3d(0, ${(1 - inn) * 28}px, 0)`;
+
+      if (steps.length) {
+        b.style.opacity = "1";
+        b.style.transform = "none";
+        steps.forEach((step, i) => {
+          const local = clamp((p - (0.3 + i * 0.16)) / 0.26);
+          step.style.opacity = String(local);
+          step.style.transform = `translate3d(0, ${(1 - local) * 16}px, 0)`;
+        });
+      } else {
+        b.style.opacity = String(inn);
+        b.style.transform = `translate3d(0, ${(1 - inn) * 28}px, 0)`;
+      }
 
       raf = window.requestAnimationFrame(frame);
     };

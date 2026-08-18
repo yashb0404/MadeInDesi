@@ -52,11 +52,16 @@ function Chapter({
 }
 
 /** The line itself, without a section around it. */
-function TurnLine({ children, note }: { children: ReactNode; note?: string }) {
+function TurnLine({ steps, note }: { steps: string[]; note?: string }) {
   return (
     <div className="u-shell">
       <p className="u-display max-w-[20ch] text-[clamp(1.9rem,4.6vw,3.5rem)] leading-[1.08] text-leaf-deep">
-        {children}
+        {steps.map((part, i) => (
+          <span key={part} data-step={i} className="inline-block opacity-0 will-change-[opacity,transform]">
+            {part}
+            {i < steps.length - 1 ? " " : null}
+          </span>
+        ))}
       </p>
       {note ? <p className="u-data text-[var(--ink-faint)] mt-5">{note}</p> : null}
     </div>
@@ -146,9 +151,10 @@ export default function AboutPage() {
           </Chapter>
         }
         second={
-          <TurnLine note="The thought everything after it was built on">
-            If food can damage the body, it can also protect it.
-          </TurnLine>
+          <TurnLine
+            steps={["If food can damage the body,", "it can also", "protect it."]}
+            note="The thought everything after it was built on"
+          />
         }
       />
 
