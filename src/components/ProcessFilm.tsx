@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { cx } from "@/lib/format";
 
 /**
@@ -22,7 +22,105 @@ const STAGES = [
   { at: 0.82, punch: "Sealed", note: "cloth, twine, no preservative" },
 ];
 
+const SRC = "/video/pickle-process.mp4";
+const POSTER = "/video/pickle-process-poster.jpg";
+
+/** The film is 1120x580. Wider than that and it can fill the screen. */
+const WIDE = "(min-aspect-ratio: 112/58)";
+
+const subscribeToWide = (onChange: () => void) => {
+  const mq = window.matchMedia(WIDE);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+};
+
+/**
+ * Assumes the narrow layout on the server, so phones — the ones that cannot
+ * afford the scrub — never hydrate into the pinned version and back out again.
+ */
+function useWide(): boolean {
+  return useSyncExternalStore(
+    subscribeToWide,
+    () => window.matchMedia(WIDE).matches,
+    () => false,
+  );
+}
+
 export function ProcessFilm() {
+  return useWide() ? <ScrubbedFilm /> : <PlainFilm />;
+}
+
+/**
+ * Phones and upright tablets. Seeking a video frame by frame is expensive and
+ * mobile decoders judder under it, so there is no scrub here: the film is an
+ * ordinary block that plays itself when reached, with the steps listed below.
+ */
+function PlainFilm() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        if (!video.getAttribute("src")) {
+          video.setAttribute("src", SRC);
+          video.load();
+        }
+        video.play().catch(() => {
+          /* Autoplay refused: the poster stays, which is a fine outcome. */
+        });
+        io.disconnect();
+      },
+      { rootMargin: "50% 0px" },
+    );
+
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <section aria-label="How the pickle is made" className="u-band py-16 md:py-20">
+      <div className="u-shell">
+        <p className="u-eyebrow">In our kitchen</p>
+        <h2 className="u-display text-[clamp(2rem,5vw,3.75rem)] mt-4 max-w-[18ch]">
+          Whole in the morning, sealed by the afternoon.
+        </h2>
+
+        <video
+          ref={videoRef}
+          className="mt-8 aspect-[112/58] w-full rounded-[1rem] object-cover"
+          poster={POSTER}
+          muted
+          playsInline
+          loop
+          preload="none"
+          aria-hidden="true"
+          tabIndex={-1}
+        />
+
+        <ol className="mt-8 grid gap-3 sm:grid-cols-2">
+          {STAGES.map(({ punch, note }, i) => (
+            <li key={punch} className="flex items-baseline gap-3">
+              <span className="u-data text-[var(--ink-faint)]">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span>
+                <span className="u-display text-[1.15rem]">{punch}</span>
+                <span className="u-data text-[var(--ink-faint)] ml-2">{note}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+/** Wide screens: pinned, and seeked from the scroll position. */
+function ScrubbedFilm() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [stage, setStage] = useState(0);
@@ -93,7 +191,7 @@ export function ProcessFilm() {
     // initial page load, where it was most of the weight.
     const attach = () => {
       if (video.getAttribute("src")) return;
-      video.setAttribute("src", "/video/pickle-process.mp4");
+      video.setAttribute("src", SRC);
       video.load();
     };
 
@@ -141,11 +239,8 @@ export function ProcessFilm() {
         <div className="sticky top-0 h-screen w-full overflow-hidden bg-[var(--color-canvas)]">
           <video
             ref={videoRef}
-            // Fills the screen on wide viewports. On anything narrower than the
-            // footage — phones and tablets held upright — cover would show a
-            // thin vertical slice of a wide overhead shot, so it fits instead.
-            className="absolute inset-0 h-full w-full object-contain [@media(min-aspect-ratio:112/58)]:object-cover"
-            poster="/video/pickle-process-poster.jpg"
+            className="absolute inset-0 h-full w-full object-cover"
+            poster={POSTER}
             muted
             playsInline
             preload="none"
