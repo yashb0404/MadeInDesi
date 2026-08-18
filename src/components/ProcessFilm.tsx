@@ -141,7 +141,10 @@ export function ProcessFilm() {
         <div className="sticky top-0 h-screen w-full overflow-hidden bg-[var(--color-canvas)]">
           <video
             ref={videoRef}
-            className="absolute inset-0 h-full w-full object-cover"
+            // Fills the screen on wide viewports. On anything narrower than the
+            // footage — phones and tablets held upright — cover would show a
+            // thin vertical slice of a wide overhead shot, so it fits instead.
+            className="absolute inset-0 h-full w-full object-contain [@media(min-aspect-ratio:112/58)]:object-cover"
             poster="/video/pickle-process-poster.jpg"
             muted
             playsInline
