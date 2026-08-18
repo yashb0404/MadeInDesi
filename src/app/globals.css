@@ -1,26 +1,366 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  MADE IN DESI — design tokens
+
+  Direction: "the paper bag". Everything the client sells is a warm brown —
+  dates, roasted nuts, black sesame, ragi. A cool green ground fought that, so
+  the page is now unbleached paper: a warm ivory ground, a soft oat second
+  surface, and near-black warm ink. Brand green stayed but moved deeper and
+  greyer so it reads as an accent against the food rather than competing with
+  it, and turmeric does the work where something must be noticed.
+
+  Sections carry the page rather than ornament between them: the two grounds
+  alternate, and each band fades into the page at both edges so the change of
+  colour is felt rather than seen. See `.u-band`.
+*/
+
+@theme {
+  /* Grounds */
+  --color-canvas: #faf5ec;
+  --color-surface: #fffdf8;
+  --color-surface-2: #f0e7d7;
+
+  /* Ink */
+  --color-ink: #221d16;
+
+  /* Brand */
+  --color-leaf: #4a7a52;
+  --color-leaf-deep: #2c4c36;
+
+  /* Accents, used sparingly */
+  --color-turmeric: #d98a1f;
+  --color-berry: #a94a45;
+
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-data: var(--font-martian), ui-monospace, monospace;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: light;
+    --hairline: color-mix(in oklab, var(--color-ink) 14%, transparent);
+    --ink-dim: color-mix(in oklab, var(--color-ink) 68%, transparent);
+    --ink-faint: color-mix(in oklab, var(--color-ink) 45%, transparent);
+    --lift: 0 1px 2px color-mix(in oklab, var(--color-ink) 6%, transparent),
+      0 8px 24px -12px color-mix(in oklab, var(--color-ink) 22%, transparent);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-leaf);
+    color: var(--color-canvas);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-leaf-deep);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  /* Lenis owns the scroll; it needs these two. */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* ---- type roles ---------------------------------------------------- */
+
+  .u-display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.032em;
+    font-variation-settings: "wdth" 96, "opsz" 48;
+  }
+
+  /* Eyebrow: the shop's own vocabulary, set in the utility face. */
+  .u-eyebrow {
+    font-family: var(--font-data);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-leaf-deep);
+  }
+
+  /* Packaging data: net weight, price, batch. Snack packets are covered in it. */
+  .u-data {
+    font-family: var(--font-data);
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .u-rule {
+    border-top: 1px solid var(--hairline);
+  }
+
+  /* ---- surfaces ------------------------------------------------------ */
+
+  .u-shell {
+    width: 100%;
+    max-width: 88rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .u-shell {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  /*
+    A band: a section on the second ground.
+
+    Sections alternate between the two grounds to give the page rhythm, but a
+    hard edge between two close warm tones looks like a mistake rather than a
+    decision. So each band fades into the page at the top and bottom over a
+    generous distance — the grounds drift into one another and there is no seam
+    to notice. This is what carries the page between sections; there is no
+    divider ornament.
+  */
+  .u-band {
+    position: relative;
+    background: var(--color-surface-2);
+  }
+
+  .u-band::before,
+  .u-band::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: clamp(3rem, 8vw, 7rem);
+    pointer-events: none;
+  }
+
+  /* Painting the page colour back over the band's own edge is what blends it. */
+  .u-band::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--color-canvas), transparent);
+  }
+
+  .u-band::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--color-canvas), transparent);
+  }
+
+  /* Content sits above the two fades. */
+  .u-band > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* For a band that ends the document — nothing follows it to blend back into. */
+  .u-band--open-end::after {
+    display: none;
+  }
+
+  /* A card lifts off the leaf rather than glowing on it. */
+  .u-tin {
+    position: relative;
+    background: var(--color-surface);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    box-shadow: var(--lift);
+    transition:
+      transform 0.5s var(--ease-out-soft),
+      box-shadow 0.5s var(--ease-out-soft);
+  }
+
+  .u-tin:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 2px 4px color-mix(in oklab, var(--color-ink) 7%, transparent),
+      0 18px 40px -16px color-mix(in oklab, var(--color-leaf-deep) 38%, transparent);
+  }
+
+  /* ---- controls ------------------------------------------------------ */
+
+  .u-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-data);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 0.95rem 1.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-leaf);
+    color: var(--color-canvas);
+    background: var(--color-leaf);
+    transition:
+      background 0.3s var(--ease-out-soft),
+      border-color 0.3s var(--ease-out-soft),
+      color 0.3s var(--ease-out-soft),
+      transform 0.3s var(--ease-out-soft);
+    cursor: pointer;
+  }
+
+  .u-btn:hover:not(:disabled) {
+    background: var(--color-leaf-deep);
+    border-color: var(--color-leaf-deep);
+    transform: translateY(-1px);
+  }
+
+  .u-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .u-btn--ghost {
+    background: transparent;
+    color: var(--color-leaf-deep);
+    border-color: color-mix(in oklab, var(--color-leaf) 45%, transparent);
+  }
+
+  .u-btn--ghost:hover:not(:disabled) {
+    background: var(--color-leaf);
+    border-color: var(--color-leaf);
+    color: var(--color-canvas);
+  }
+
+  .u-field {
+    width: 100%;
+    background: var(--color-surface);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 0.8rem 0.9rem;
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    transition:
+      border-color 0.25s var(--ease-out-soft),
+      box-shadow 0.25s var(--ease-out-soft);
+  }
+
+  .u-field::placeholder {
+    color: var(--ink-faint);
+  }
+
+  .u-field:focus {
+    border-color: var(--color-leaf);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-leaf) 18%, transparent);
+  }
+
+  .u-label {
+    display: block;
+    font-family: var(--font-data);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 0.4rem;
+  }
+}
+
+@layer utilities {
+  /*
+    Scroll reveal.
+
+    Three things make sure content cannot get stranded invisible: the <noscript>
+    override in the document head, an immediate show for anything already in the
+    viewport, and a failsafe timer in Reveal.tsx. The text is always present in
+    the HTML either way — only its opacity is in play — so crawlers read the
+    full page regardless.
+  */
+  .u-reveal[data-shown="false"] {
+    opacity: 0;
+    transform: translateY(1.75rem);
+  }
+
+  .u-reveal {
+    transition:
+      opacity 0.9s var(--ease-out-soft),
+      transform 0.9s var(--ease-out-soft);
+  }
+
+  /*
+    Marquee.
+
+    The track holds the list twice and slides exactly -50%, so the second copy
+    lands where the first started and the loop is seamless. Only `transform`
+    moves, so the whole thing sits on the compositor — the duration is just an
+    interpolation rate and costs nothing to raise.
+
+    It pauses on hover, because moving text you cannot stop to finish reading is
+    hostile, and it stops dead for reduced motion.
+  */
+  .u-marquee {
+    display: flex;
+    width: max-content;
+    animation: u-marquee-run var(--dur, 80s) linear infinite;
+  }
+
+  .u-marquee--reverse {
+    animation-direction: reverse;
+  }
+
+  .u-marquee-row:hover .u-marquee,
+  .u-marquee-row:focus-within .u-marquee {
+    animation-play-state: paused;
+  }
+
+  @keyframes u-marquee-run {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .u-hide-scrollbar {
+    scrollbar-width: none;
+  }
+  .u-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .u-reveal[data-shown="false"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .u-tin:hover {
+    transform: none;
+  }
+
+  .u-marquee {
+    animation: none;
+  }
 }
