@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/Reveal";
+import { ScrollSwap } from "@/components/ScrollSwap";
 
 export const metadata: Metadata = {
   title: "Our story",
@@ -47,6 +48,18 @@ function Chapter({
         <div className="mt-5">{children}</div>
       </div>
     </section>
+  );
+}
+
+/** The line itself, without a section around it. */
+function TurnLine({ children, note }: { children: ReactNode; note?: string }) {
+  return (
+    <div className="u-shell">
+      <p className="u-display max-w-[20ch] text-[clamp(1.9rem,4.6vw,3.5rem)] leading-[1.08] text-leaf-deep">
+        {children}
+      </p>
+      {note ? <p className="u-data text-[var(--ink-faint)] mt-5">{note}</p> : null}
+    </div>
   );
 }
 
@@ -113,26 +126,31 @@ export default function AboutPage() {
         </Reveal>
       </section>
 
-      {/* ---- 01 ------------------------------------------------------- */}
-      <Chapter n="01" label="Two years">
-        <Say lead>
-          For nearly two years, Maaya was ill. Not the kind of illness you get over in a
-          week &mdash; the kind that rearranges your life while you wait it out.
-        </Say>
-        <Say>
-          She spent those years thinking about food. Not as taste, and not as convenience.
-          As the thing going into a body that was trying to repair itself. When you are
-          well, you can afford not to ask what is in something. When you are not, the
-          question stops being optional.
-        </Say>
-        <Say>
-          What she found when she started reading labels did not reassure her.
-        </Say>
-      </Chapter>
-
-      <Turn note="The thought everything after it was built on">
-        If food can damage the body, it can also protect it.
-      </Turn>
+      {/* ---- 01: the chapter becomes the line it produced -------------- */}
+      <ScrollSwap
+        first={
+    <Chapter n="01" label="Two years">
+            <Say lead>
+              For nearly two years, Maaya was ill. Not the kind of illness you get over in a
+              week &mdash; the kind that rearranges your life while you wait it out.
+            </Say>
+            <Say>
+              She spent those years thinking about food. Not as taste, and not as convenience.
+              As the thing going into a body that was trying to repair itself. When you are
+              well, you can afford not to ask what is in something. When you are not, the
+              question stops being optional.
+            </Say>
+            <Say>
+              What she found when she started reading labels did not reassure her.
+            </Say>
+          </Chapter>
+        }
+        second={
+          <TurnLine note="The thought everything after it was built on">
+            If food can damage the body, it can also protect it.
+          </TurnLine>
+        }
+      />
 
       {/* ---- 02 ------------------------------------------------------- */}
       <Chapter n="02" label="What she found">
