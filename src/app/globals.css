@@ -235,6 +235,14 @@
     cursor: not-allowed;
   }
 
+  /* A button offering something rather than committing to it — the saved
+     address on checkout. Same shape, less weight, so it never competes with
+     the one button on the page that takes money. */
+  .u-btn--sm {
+    padding: 0.6rem 1.15rem;
+    font-size: 0.625rem;
+  }
+
   .u-btn--ghost {
     background: transparent;
     color: var(--color-leaf-deep);

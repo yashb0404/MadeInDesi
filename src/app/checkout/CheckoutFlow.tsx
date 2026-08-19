@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { openRazorpay } from "@/lib/razorpay-checkout";
+import { clearSaved, summarise, useSavedDetails, writeSaved } from "@/lib/saved-details";
 import { useCart, useCartHydrated, totals } from "@/store/cart";
 import { money, weight, FREE_SHIPPING_OVER } from "@/lib/format";
 import { ProductShot } from "@/components/ProductShot";
@@ -70,11 +71,37 @@ export function CheckoutFlow() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * An address remembered from a previous order on this device. Null until the
+   * store has been read on the client, so the first render still matches the
+   * server HTML. `dismissed` hides the offer for this visit once it has been
+   * used, without forgetting the address itself.
+   */
+  const saved = useSavedDetails();
+  const [dismissed, setDismissed] = useState(false);
+  const offer = dismissed ? null : saved;
+
   const { detailed, subtotal, shipping, total } = totals(hydrated ? lines : []);
 
   const missing = FIELDS.filter((f) => !details[f.key].trim()).map((f) => f.key);
   const pincodeBad = details.pincode.trim().length > 0 && !/^\d{6}$/.test(details.pincode.trim());
   const canPlace = missing.length === 0 && !pincodeBad && detailed.length > 0;
+
+  /** Fills the form from the saved address, and retires the offer. */
+  function useSaved() {
+    if (!offer) return;
+    setDetails(offer);
+    setDismissed(true);
+    // Anything the customer had already typed has just been replaced, so old
+    // "you missed this" markers are no longer about what is on screen.
+    setTouched(false);
+  }
+
+  /** Forgets the address on this device. The typed form is left alone. */
+  function forgetSaved() {
+    clearSaved();
+    setDismissed(true);
+  }
 
   /**
    * Checkout.
@@ -115,6 +142,10 @@ export function CheckoutFlow() {
         phone: details.phone,
         ref: data.ref,
         onSuccess: () => {
+          // Saved only once an order is actually paid for. Storing an address
+          // typed by someone who then abandoned checkout would leave it on the
+          // device without them ever having agreed to anything.
+          writeSaved(details);
           setPlaced(data.ref);
           clear();
         },
@@ -166,6 +197,32 @@ export function CheckoutFlow() {
       <div>
         <p className="u-eyebrow">Checkout</p>
         <h1 className="u-display text-[clamp(1.75rem,4vw,2.75rem)] mt-3">Sweet home</h1>
+
+        {offer ? (
+          <div className="u-tin mt-7 p-5">
+            <p className="u-eyebrow">Last time you shipped to</p>
+            <p className="mt-2.5 text-[1.05rem] leading-snug">{offer.name}</p>
+            <p className="u-data text-[var(--ink-dim)] mt-1">{summarise(offer)}</p>
+            <p className="u-data text-[var(--ink-faint)] mt-0.5">{offer.phone}</p>
+
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
+              <button type="button" onClick={useSaved} className="u-btn u-btn--sm">
+                Use these details
+              </button>
+              <button
+                type="button"
+                onClick={forgetSaved}
+                className="u-data text-[var(--ink-faint)] underline underline-offset-4 hover:text-[var(--color-ink)]"
+              >
+                Forget this address
+              </button>
+            </div>
+
+            <p className="u-data text-[var(--ink-faint)] mt-4 leading-relaxed">
+              Saved on this device only &mdash; never sent anywhere until you place an order.
+            </p>
+          </div>
+        ) : null}
 
         <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2 mt-8">
           {FIELDS.map((f) => {
