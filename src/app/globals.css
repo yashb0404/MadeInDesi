@@ -303,6 +303,61 @@
   }
 
   /*
+    The opening quote panel on the story page.
+
+    The page's default reveal — fade up, everything at once — is fine for prose
+    and wrong for the one line the page opens on. Here the panel arrives first,
+    the mark draws itself as if it were being written, and the sentence lifts in
+    behind it. Three beats instead of one, so the eye lands on the quote last
+    and stays there.
+  */
+  .u-quote-in .u-quote-mark path {
+    stroke-dasharray: 90;
+    stroke-dashoffset: 90;
+  }
+
+  .u-quote-in[data-shown="true"] .u-quote-mark path {
+    animation: u-draw 1.1s var(--ease-out-soft) 0.18s forwards;
+  }
+
+  .u-quote-in[data-shown="true"] .u-quote-mark path:nth-child(2) {
+    animation-delay: 0.6s;
+  }
+
+  .u-quote-in .u-quote-panel {
+    clip-path: inset(0 0 100% 0 round 28px);
+    transition: clip-path 1s var(--ease-out-soft);
+  }
+
+  .u-quote-in[data-shown="true"] .u-quote-panel {
+    clip-path: inset(0 0 0 0 round 28px);
+  }
+
+  .u-quote-in .u-quote-line {
+    opacity: 0;
+    transform: translateY(0.9rem);
+    transition:
+      opacity 0.8s var(--ease-out-soft),
+      transform 0.8s var(--ease-out-soft);
+    transition-delay: 0.75s;
+  }
+
+  .u-quote-in .u-quote-line + .u-quote-line {
+    transition-delay: 1s;
+  }
+
+  .u-quote-in[data-shown="true"] .u-quote-line {
+    opacity: 1;
+    transform: none;
+  }
+
+  @keyframes u-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /*
     Marquee.
 
     The track holds the list twice and slides exactly -50%, so the second copy
@@ -358,6 +413,20 @@
 
   .u-tin:hover {
     transform: none;
+  }
+
+  .u-quote-in .u-quote-panel,
+  .u-quote-in .u-quote-line {
+    clip-path: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .u-quote-in .u-quote-mark path {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
   }
 
   .u-marquee {

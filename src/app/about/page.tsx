@@ -127,31 +127,43 @@ export default function AboutPage() {
   return (
     <div className="pb-16">
       {/* ---- the opening ---------------------------------------------- */}
-      <section className="u-shell pt-24 pb-4 md:pt-28 md:pb-6">
-        <div className="grid items-end gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+      <section className="u-shell pt-20 pb-6 md:pt-24 md:pb-8">
+        <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
           <Reveal>
             <p className="u-eyebrow">Our story</p>
-            <h1 className="u-display mt-5 max-w-[14ch] text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98]">
+            <h1 className="u-display mt-4 max-w-[14ch] text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98]">
               It began on a hospital bed.
             </h1>
-            <p className="u-data text-[var(--ink-faint)] mt-6">
+            <p className="u-data text-[var(--ink-faint)] mt-5">
               Made In Desi &middot; founded by Maaya &middot; Hyderabad
             </p>
           </Reveal>
 
-          <Reveal delay={160}>
-            {/* An arch rather than a rectangle, echoing the shape the homepage
-                already uses for its shots. */}
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-t-[999px] bg-surface-2">
-              <Image
-                src="/products/amla-pickle.jpg"
-                alt="A jar of amla pickle, whole gooseberries in spiced oil"
-                fill
-                sizes="(min-width: 1024px) 38vw, 100vw"
-                className="object-cover"
-                priority
-              />
-            </div>
+          {/* Not a product shot. The opening of this page is about a person,
+              not a jar — so the facing column carries the sentence the whole
+              story rests on, over a quiet mark, instead of food. */}
+          <Reveal delay={160} className="u-quote-in">
+            <figure className="u-band u-quote-panel relative overflow-hidden rounded-[28px] px-7 py-9 md:px-9 md:py-11">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="u-quote-mark h-8 w-8 text-leaf-deep/70"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 20.5S3.5 15.2 3.5 9.3A4.6 4.6 0 0 1 12 6.7a4.6 4.6 0 0 1 8.5 2.6c0 5.9-8.5 11.2-8.5 11.2Z" />
+                <path d="M12 20.5V11.4M12 11.4c0-2 1.5-3.4 3.4-3.7-.1 2-1.5 3.5-3.4 3.7Zm0 0c0-2-1.5-3.4-3.4-3.7.1 2 1.5 3.5 3.4 3.7Z" />
+              </svg>
+              <blockquote className="u-quote-line u-display mt-5 text-[clamp(1.45rem,2.6vw,2.1rem)] leading-[1.15] text-leaf-deep">
+                &ldquo;Food made for a reason, by someone who is answerable for it.&rdquo;
+              </blockquote>
+              <figcaption className="u-quote-line u-data text-[var(--ink-faint)] mt-5">
+                Maaya &middot; on why she started making it herself
+              </figcaption>
+            </figure>
           </Reveal>
         </div>
       </section>
