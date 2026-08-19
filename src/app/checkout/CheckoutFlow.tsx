@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { openRazorpay } from "@/lib/razorpay-checkout";
 import { useCart, useCartHydrated, totals } from "@/store/cart";
 import { money, weight, FREE_SHIPPING_OVER } from "@/lib/format";
 import { ProductShot } from "@/components/ProductShot";
@@ -66,6 +67,8 @@ export function CheckoutFlow() {
   const [details, setDetails] = useState<Details>(EMPTY);
   const [touched, setTouched] = useState(false);
   const [placed, setPlaced] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const { detailed, subtotal, shipping, total } = totals(hydrated ? lines : []);
 
@@ -73,13 +76,56 @@ export function CheckoutFlow() {
   const pincodeBad = details.pincode.trim().length > 0 && !/^\d{6}$/.test(details.pincode.trim());
   const canPlace = missing.length === 0 && !pincodeBad && detailed.length > 0;
 
-  // Order confirmation. The payment call belongs here — see the note below.
-  function placeOrder() {
+  /**
+   * Checkout.
+   *
+   * Sends slugs and quantities — never a total. The server prices the bag
+   * itself and registers that amount with Razorpay, so the number the customer
+   * is asked to pay cannot be edited from this page.
+   *
+   * The confirmation shown at the end says the payment went through, which is
+   * true, but it is NOT what marks the order paid: the webhook does that, on
+   * its own, whether or not this tab is still open.
+   */
+  async function placeOrder() {
     setTouched(true);
-    if (!canPlace) return;
-    const ref = `MA-${Date.now().toString(36).toUpperCase().slice(-6)}`;
-    setPlaced(ref);
-    clear();
+    setError(null);
+    if (!canPlace || busy) return;
+
+    setBusy(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          lines: lines.map((l) => ({ slug: l.slug, qty: l.qty })),
+          customer: details,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "Could not start the payment.");
+
+      await openRazorpay({
+        keyId: data.keyId,
+        orderId: data.orderId,
+        amount: data.amount,
+        currency: data.currency,
+        name: details.name,
+        phone: details.phone,
+        ref: data.ref,
+        onSuccess: () => {
+          setPlaced(data.ref);
+          clear();
+        },
+        // Dismissing the modal is not a failure — people go and open their UPI
+        // app, or change their mind. The bag is left exactly as it was.
+        onDismiss: () => setBusy(false),
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setBusy(false);
+    }
   }
 
   if (placed) {
@@ -90,8 +136,8 @@ export function CheckoutFlow() {
           That&rsquo;s in. Reference {placed}.
         </h1>
         <p className="mt-6 text-[var(--ink-dim)] leading-relaxed">
-          We roll on Monday and Thursday, so your box goes out on whichever comes first. You&rsquo;ll
-          get a message on {details.phone || "your phone"} when it ships.
+          Payment received. We roll on Monday and Thursday, so your box goes out on whichever comes
+          first. You&rsquo;ll get a message on {details.phone || "your phone"} when it ships.
         </p>
         <Link href="/shop" className="u-btn mt-9">
           Back to the shelf
@@ -198,13 +244,25 @@ export function CheckoutFlow() {
             </div>
           </div>
 
-          <button type="button" onClick={placeOrder} className="u-btn w-full mt-7">
-            Place order
+          <button
+            type="button"
+            onClick={placeOrder}
+            disabled={busy}
+            aria-busy={busy}
+            className="u-btn w-full mt-7 disabled:opacity-60"
+          >
+            {busy ? "Opening payment…" : `Pay ${money(total)}`}
           </button>
 
+          {error ? (
+            <p role="alert" className="u-data text-berry mt-4 leading-relaxed">
+              {error}
+            </p>
+          ) : null}
+
           <p className="u-data text-[var(--ink-faint)] mt-4 leading-relaxed">
-            Payment is not connected yet. Placing an order records it and shows a reference — wire
-            Razorpay into <code>placeOrder</code> before launch.
+            UPI or card. Payments are handled by Razorpay &mdash; card details are entered on their
+            secure window and never touch this site.
           </p>
         </div>
       </div>
