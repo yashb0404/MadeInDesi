@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useCart, useCartHydrated, totals } from "@/store/cart";
@@ -36,8 +37,21 @@ export function Nav() {
       style={lifted ? { borderBottom: "1px solid var(--hairline)" } : undefined}
     >
       <div className="u-shell flex items-center justify-between h-[72px] gap-6">
-        <Link href="/" className="flex items-baseline gap-2.5 shrink-0">
-          <span className="u-display text-2xl tracking-tight">Made in Desi</span>
+        {/*
+          The lockup without its tagline — "We bring you HEALTH, not just food"
+          is unreadable at this height and would only muddy the bar. The name
+          stays in the alt text, so the link still reads as the brand to a
+          screen reader and to Google.
+        */}
+        <Link href="/" className="flex items-center shrink-0">
+          <Image
+            src="/logo-mark.png"
+            alt="Made in Desi"
+            width={856}
+            height={687}
+            priority
+            className="h-11 w-auto md:h-12"
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-9">
