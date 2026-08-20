@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Our story",
   description:
     "Made In Desi was not born in a factory. It was born on a hospital bed — out of the two years Maaya spent ill, and the conviction that if food can damage the body, it can also protect it.",
+  alternates: { canonical: "/about" },
 };
 
 /**

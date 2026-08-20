@@ -20,7 +20,14 @@ export async function generateMetadata(props: PageProps<"/product/[slug]">): Pro
   return {
     title: product.name,
     description: product.blurb,
-    openGraph: { title: product.name, description: product.blurb, images: [product.image] },
+    alternates: { canonical: `/product/${product.slug}` },
+    openGraph: {
+      type: "website",
+      title: product.name,
+      description: product.blurb,
+      images: [{ url: product.image, alt: product.name }],
+    },
+    twitter: { card: "summary_large_image", title: product.name, description: product.blurb, images: [product.image] },
   };
 }
 
@@ -31,8 +38,42 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
 
   const also = related(product.slug);
 
+  /*
+    Product schema — the thing that puts a price and an availability line under
+    the result in Google rather than a bare title.
+
+    No `aggregateRating`: we have reviews on the homepage but they are not
+    per-product and not verifiable, and inventing star counts here is exactly
+    what gets structured data penalised. Availability is InStock because the
+    kitchen rolls to order; when something genuinely runs out this needs to
+    follow it, or the schema starts lying.
+  */
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.story,
+    image: `${base}${product.image}`,
+    sku: product.slug,
+    brand: { "@type": "Brand", name: "Made in Desi" },
+    weight: { "@type": "QuantitativeValue", value: product.weightGrams, unitCode: "GRM" },
+    offers: {
+      "@type": "Offer",
+      url: `${base}/product/${product.slug}`,
+      priceCurrency: "INR",
+      price: product.price,
+      availability: "https://schema.org/InStock",
+      seller: { "@type": "Organization", name: "Made in Desi" },
+    },
+  };
+
   return (
     <div className="pt-28 pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
       <div className="u-shell">
         <Link
           href="/shop"

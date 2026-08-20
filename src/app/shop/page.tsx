@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Shop",
   description:
     "Nutrition balls, biotin bites, calcium and iron balls, mixed berry and nuts, and jaggery banana chips. Rolled by hand in small batches.",
+  alternates: { canonical: "/shop" },
 };
 
 export default async function ShopPage(props: PageProps<"/shop">) {

@@ -34,6 +34,50 @@ export const metadata: Metadata = {
   },
   description:
     "Dates, nuts and seeds rolled by hand in small batches. Nutrition balls, biotin bites, calcium and iron balls, and jaggery banana chips.",
+  keywords: [
+    "handmade nutrition balls",
+    "date and nut ladoo",
+    "Andhra pickles online",
+    "no refined sugar snacks",
+    "healthy snacks Hyderabad",
+  ],
+  // Every page resolves its canonical against metadataBase, so the same page
+  // reached with tracking parameters is not indexed as a second copy.
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: "Made in Desi",
+    locale: "en_IN",
+    title: "Made in Desi — hand-rolled nutrition balls & chips",
+    description:
+      "Dates, nuts and seeds rolled by hand in small batches, in Hyderabad. No refined sugar, no preservatives.",
+    images: [{ url: "/products/nutrition-balls.jpg", width: 1200, height: 1200, alt: "Hand-rolled nutrition balls" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Made in Desi — hand-rolled nutrition balls & chips",
+    description:
+      "Dates, nuts and seeds rolled by hand in small batches, in Hyderabad. No refined sugar, no preservatives.",
+    images: ["/products/nutrition-balls.jpg"],
+  },
+  robots: { index: true, follow: true },
+};
+
+/**
+ * Who this is, in the form search engines read rather than guess.
+ *
+ * Kept minimal and TRUE: only facts the client has confirmed. An address or a
+ * phone number invented to fill the schema is worse than leaving it out —
+ * Google cross-checks these against other listings.
+ */
+const ORGANISATION = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Made in Desi",
+  description: "Hand-rolled nutrition balls, bites and Andhra pickles, made in small batches in Hyderabad.",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  logo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/logo.png`,
+  address: { "@type": "PostalAddress", addressLocality: "Hyderabad", addressRegion: "Telangana", addressCountry: "IN" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -53,6 +97,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <noscript>
           <style>{`.u-reveal{opacity:1!important;transform:none!important}`}</style>
         </noscript>
+
+        <script
+          type="application/ld+json"
+          // The payload is our own constant, not user input, so there is
+          // nothing here for a script tag to break out of.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANISATION) }}
+        />
       </head>
       <body>
         <SmoothScroll />
