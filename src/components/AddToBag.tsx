@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/store/cart";
 import { cx } from "@/lib/format";
 
@@ -19,6 +19,12 @@ export function AddToBag({
 }) {
   const add = useCart((s) => s.add);
   const [justAdded, setJustAdded] = useState(false);
+  const timer = useRef<number | undefined>(undefined);
+
+  // The label settles back on a timer, and the bag is often what unmounts the
+  // button (a card leaving a filtered grid). Cleared so the timer does not
+  // outlive it, and restarted rather than stacked on a second click.
+  useEffect(() => () => window.clearTimeout(timer.current), []);
 
   return (
     <button
@@ -26,7 +32,8 @@ export function AddToBag({
       onClick={() => {
         add(slug);
         setJustAdded(true);
-        window.setTimeout(() => setJustAdded(false), 1600);
+        window.clearTimeout(timer.current);
+        timer.current = window.setTimeout(() => setJustAdded(false), 1600);
       }}
       className={cx("u-btn", compact && "u-btn--ghost px-4 py-2", className)}
     >

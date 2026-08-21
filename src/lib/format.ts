@@ -4,8 +4,12 @@ const inr = new Intl.NumberFormat("en-IN", {
   maximumFractionDigits: 0,
 });
 
-export function money(paise: number): string {
-  return inr.format(paise);
+/**
+ * RUPEES in, "₹450" out — not paise. Paise exist only at the Razorpay
+ * boundary (`toPaise` in lib/quote.ts); nothing on the page is priced in them.
+ */
+export function money(rupees: number): string {
+  return inr.format(rupees);
 }
 
 export function weight(grams: number): string {

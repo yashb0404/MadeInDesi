@@ -51,7 +51,12 @@ export const metadata: Metadata = {
     title: "Made in Desi — hand-rolled nutrition balls & chips",
     description:
       "Dates, nuts and seeds rolled by hand in small batches, in Hyderabad. No refined sugar, no preservatives.",
-    images: [{ url: "/products/nutrition-balls.jpg", width: 1200, height: 1200, alt: "Hand-rolled nutrition balls" }],
+    // The real file is a 931x1600 phone portrait. Declaring a square it is not
+    // makes Facebook and LinkedIn lay the card out against the wrong box.
+    // WORTH DOING BEFORE LAUNCH: a purpose-made 1200x630 landscape card —
+    // `summary_large_image` is a wide slot, and a portrait gets centre-cropped
+    // to a stripe of it whatever the numbers here say.
+    images: [{ url: "/products/nutrition-balls.jpg", width: 931, height: 1600, alt: "Hand-rolled nutrition balls" }],
   },
   twitter: {
     card: "summary_large_image",

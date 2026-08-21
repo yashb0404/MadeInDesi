@@ -5,10 +5,16 @@ import { useEffect, useRef } from "react";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { useCart, useCartHydrated, totals } from "@/store/cart";
 import { money, weight, FREE_SHIPPING_OVER } from "@/lib/format";
+import { lockScroll } from "@/lib/scroll-lock";
 import { ProductShot } from "./ProductShot";
 
 export function CartDrawer() {
-  const { lines, open, closeCart, setQty } = useCart();
+  // Selected field by field. Subscribing to the whole store re-renders the
+  // drawer — and every product shot inside it — on any state change at all.
+  const lines = useCart((s) => s.lines);
+  const open = useCart((s) => s.open);
+  const closeCart = useCart((s) => s.closeCart);
+  const setQty = useCart((s) => s.setQty);
   const hydrated = useCartHydrated();
   const panel = useRef<HTMLDivElement>(null);
   const { detailed, subtotal, shipping, count } = totals(hydrated ? lines : []);
@@ -21,12 +27,12 @@ export function CartDrawer() {
     };
 
     document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
+    const unlock = lockScroll();
     panel.current?.focus();
 
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      unlock();
     };
   }, [open, closeCart]);
 

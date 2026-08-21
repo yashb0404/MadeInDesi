@@ -66,10 +66,13 @@ export function CursorTrail({
     let primed = false;
 
     function drop(x: number, y: number) {
-      const node = drops[next];
+      const slot = next;
+      const node = drops[slot];
       next = (next + 1) % drops.length;
 
-      const tilt = (next % 2 ? 1 : -1) * (4 + (next % 3) * 3);
+      // Read off the slot this drop actually occupies. Taking it from `next`
+      // after the advance gave every drop its neighbour's angle.
+      const tilt = (slot % 2 ? 1 : -1) * (4 + (slot % 3) * 3);
       const at = `translate3d(${Math.round(x - SIZE / 2)}px, ${Math.round(y - SIZE / 2)}px, 0)`;
 
       // Place and show with no transition...

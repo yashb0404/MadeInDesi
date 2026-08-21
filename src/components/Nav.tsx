@@ -75,7 +75,9 @@ export function Nav() {
           type="button"
           onClick={openCart}
           className="group flex items-center gap-2.5 u-data uppercase tracking-[0.16em] cursor-pointer rounded-full px-4 py-2 text-ink border border-[var(--hairline)] transition-colors duration-300 hover:bg-leaf hover:text-canvas hover:border-leaf"
-          aria-label={count > 0 ? `Open bag, ${count} items` : "Open bag"}
+          aria-label={
+            count > 0 ? `Open bag, ${count} ${count === 1 ? "item" : "items"}` : "Open bag"
+          }
         >
           <ShoppingBag size={17} strokeWidth={1.6} aria-hidden />
           <span className="tabular-nums">{count}</span>

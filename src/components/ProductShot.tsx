@@ -26,10 +26,20 @@ export function ProductShot({
   priority?: boolean;
   detail?: boolean;
 }) {
-  const [failed, setFailed] = useState(false);
   const src = detail && product.detailImage ? product.detailImage : product.image;
 
-  if (failed) {
+  // `failed` is keyed to the source. Without this, a frame that has already
+  // fallen back stays fallen back when it is handed a different photograph.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+
+  /*
+    Two ways to end up on the placeholder. `photoPending` is the catalogue
+    saying up front that no file shipped for this one — honouring it here means
+    those products go straight to the placeholder instead of firing a request
+    that is guaranteed to 400 and then flashing over to it. `failedSrc` is the
+    unplanned case: a path that should have resolved and did not.
+  */
+  if (product.photoPending || failedSrc === src) {
     return (
       <div
         className={cx("relative flex items-center justify-center overflow-hidden bg-surface-2", className)}
@@ -62,7 +72,7 @@ export function ProductShot({
         fill
         sizes={sizes}
         priority={priority}
-        onError={() => setFailed(true)}
+        onError={() => setFailedSrc(src)}
         className="object-cover"
       />
     </div>
